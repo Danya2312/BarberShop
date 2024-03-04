@@ -2,6 +2,22 @@ require 'rubygems'
 require 'sinatra'
 require 'sinatra/reloader'
 require 'pony'
+require 'pg'
+
+configure do 
+	@db = PG::Connection.new( dbname: 'BarberShop', port: 5432, password: 'postgres', user: 'postgres', host: 'localhost' )
+	@db.exec 'CREATE TABLE IF NOT EXISTS 
+	"Users" 
+	(
+	id Serial PRIMARY KEY,
+	username Varchar,
+	phone Varchar,
+	datestamp Varchar,
+	barber Varchar,
+	color Varchar
+)'
+
+end
 
 get '/' do
 	erb "Hello! <a href=\"https://github.com/bootstrap-ruby/sinatra-bootstrap\">Original</a> pattern has been modified for <a href=\"http://rubyschool.us/\">Ruby School</a>"			
