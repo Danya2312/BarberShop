@@ -5,9 +5,10 @@ require 'pony'
 require 'pg'
 
 configure do 
-	@db = PG::Connection.new( dbname: 'BarberShop', port: 5432, password: 'postgres', user: 'postgres', host: 'localhost' )
-	@db.exec 'CREATE TABLE IF NOT EXISTS 
-	"Users" 
+	db = get_db
+#	db = PG::Connection.new( dbname: 'BarberShop', port: 5432, password: 'postgres', user: 'postgres', host: 'localhost' )
+	db.exec 'CREATE TABLE IF NOT EXISTS 
+	Users 
 	(
 	id Serial PRIMARY KEY,
 	username Varchar,
@@ -55,8 +56,25 @@ post '/visit' do
 		end
 	end
 
+	db = get_db
+	db.exec 'insert into 
+		Users
+		(
+			username,
+			phone,
+			datestamp,
+			barber,
+			color
+			)
+			values ( $1, $2, $3, $4, $5 )', [@username, @phone, @datetime, @barber, @color]
+
 	erb "OK, username is #{@username}, #{@phone}, #{@datetime}, #{@barber}, #{@color}"
 end
+
+def get_db
+	return PG::Connection.new( dbname: 'BarberShop', port: 5432, password: 'postgres', user: 'postgres', host: 'localhost' )
+end
+
 
 get '/contacts' do
 	erb :contacts
