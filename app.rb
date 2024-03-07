@@ -76,7 +76,7 @@ end
 
 get '/showusers' do 
 	db = get_db
-	@s = db.exec 'Select * from Users order by id desc'
+	@results = db.exec 'Select * from Users order by id desc'
 #	erb "<%= @s.each {|row| row } %>"
 	erb :showusers
 
