@@ -4,9 +4,12 @@ require 'sinatra/reloader'
 require 'pony'
 require 'pg'
 
+def get_db
+  return PG::Connection.new( dbname: 'BarberShop', port: 5432, password: 'postgres', user: 'postgres', host: 'localhost' )
+end
+
 configure do 
 	db = get_db
-#	db = PG::Connection.new( dbname: 'BarberShop', port: 5432, password: 'postgres', user: 'postgres', host: 'localhost' )
 	db.exec 'CREATE TABLE IF NOT EXISTS 
 	Users 
 	(
@@ -71,8 +74,12 @@ post '/visit' do
 	erb "OK, username is #{@username}, #{@phone}, #{@datetime}, #{@barber}, #{@color}"
 end
 
-def get_db
-	return PG::Connection.new( dbname: 'BarberShop', port: 5432, password: 'postgres', user: 'postgres', host: 'localhost' )
+get '/showusers' do 
+	db = get_db
+	@s = db.exec 'Select * from Users order by id desc'
+#	erb "<%= @s.each {|row| row } %>"
+	erb :showusers
+
 end
 
 
