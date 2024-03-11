@@ -21,6 +21,11 @@ def get_db
   return PG::Connection.new( dbname: 'BarberShop', port: 5432, password: 'postgres', user: 'postgres', host: 'localhost' )
 end
 
+before do
+	db = get_db
+	@barbers = db.exec("select * from Barbers")
+end
+
 configure do 
 	db = get_db
 	db.exec 'CREATE TABLE IF NOT EXISTS 
