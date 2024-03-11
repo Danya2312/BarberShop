@@ -4,6 +4,19 @@ require 'sinatra/reloader'
 require 'pony'
 require 'pg'
 
+def is_barber_exists? db, name
+	result = db.exec("select * from Barbers where name = $1", [name])
+	return result.to_a.length > 0
+end
+
+def seed_db db, barbers
+	barbers.each do |barber|
+		if !is_barber_exists? db, barber
+			db.exec("insert into Barbers (name) values ($1)", [barber])
+		end
+	end
+end
+
 def get_db
   return PG::Connection.new( dbname: 'BarberShop', port: 5432, password: 'postgres', user: 'postgres', host: 'localhost' )
 end
@@ -20,6 +33,16 @@ configure do
 	barber Varchar,
 	color Varchar
 )'
+
+
+	db.exec 'CREATE TABLE IF NOT EXISTS 
+	Barbers 
+	(
+	id Serial PRIMARY KEY,
+	name Varchar
+)'
+
+	seed_db db, ['Jessie Pinkman', 'Walter White', 'Gus Fring', 'Mike Ehrmantraut']
 
 end
 
@@ -71,7 +94,6 @@ post '/visit' do
 			)
 			values ( $1, $2, $3, $4, $5 )', [@username, @phone, @datetime, @barber, @color]
 
-	erb "OK, username is #{@username}, #{@phone}, #{@datetime}, #{@barber}, #{@color}"
 end
 
 get '/showusers' do 
